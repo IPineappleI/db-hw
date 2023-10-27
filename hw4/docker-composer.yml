@@ -1,0 +1,112 @@
+version: '3'
+
+services:
+  library-master:
+    image: postgres:14.5
+    environment:
+      POSTGRES_USERNAME: OLSHEVSKIY_215
+      POSTGRES_PASSWORD: OLSHEVSKIY_215
+      POSTGRES_DB: OLSHEVSKIY_215
+      REPMGR_PASSWORD: OLSHEVSKIY_215
+      REPMGR_PRIMARY_HOST: library-master
+      REPMGR_PARTNER_NODES: library-master,library-slave
+      REPMGR_NODE_NAME: node-1
+      REPMGR_NODE_NETWORK_NAME: library-master
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./docker/sql/library:/docker-entrypoint-initdb.d/
+
+  library-slave:
+    image: postgres:14.5
+    environment:
+      POSTGRES_USERNAME: OLSHEVSKIY_215
+      POSTGRES_PASSWORD: OLSHEVSKIY_215
+      POSTGRES_DB: OLSHEVSKIY_215
+      REPMGR_PASSWORD: OLSHEVSKIY_215
+      REPMGR_PRIMARY_HOST: library-master
+      REPMGR_PARTNER_NODES: library-master,library-slave
+      REPMGR_NODE_NAME: node-2
+      REPMGR_NODE_NETWORK_NAME: library-slave
+    ports:
+      - "5433:5432"
+    depends_on:
+      - library-master
+
+  trains-master:
+    image: postgres:14.5
+    environment:
+      POSTGRES_USERNAME: OLSHEVSKIY_215
+      POSTGRES_PASSWORD: OLSHEVSKIY_215
+      POSTGRES_DB: OLSHEVSKIY_215
+      REPMGR_PASSWORD: OLSHEVSKIY_215
+      REPMGR_PRIMARY_HOST: trains-master
+      REPMGR_PARTNER_NODES: trains-master,trains-slave
+      REPMGR_NODE_NAME: node-1
+      REPMGR_NODE_NETWORK_NAME: trains-master
+    ports:
+      - "5434:5432"
+    volumes:
+      - ./docker/sql/trains:/docker-entrypoint-initdb.d/
+
+  trains-slave:
+    image: postgres:14.5
+    environment:
+      POSTGRES_USERNAME: OLSHEVSKIY_215
+      POSTGRES_PASSWORD: OLSHEVSKIY_215
+      POSTGRES_DB: OLSHEVSKIY_215
+      REPMGR_PASSWORD: OLSHEVSKIY_215
+      REPMGR_PRIMARY_HOST: trains-master
+      REPMGR_PARTNER_NODES: trains-master,trains-slave
+      REPMGR_NODE_NAME: node-2
+      REPMGR_NODE_NETWORK_NAME: trains-slave
+    ports:
+      - "5435:5432"
+    depends_on:
+      - trains-master
+
+  hospital-master:
+    image: postgres:14.5
+    environment:
+      POSTGRES_USERNAME: OLSHEVSKIY_215
+      POSTGRES_PASSWORD: OLSHEVSKIY_215
+      POSTGRES_DB: OLSHEVSKIY_215
+      REPMGR_PASSWORD: OLSHEVSKIY_215
+      REPMGR_PRIMARY_HOST: hospital-master
+      REPMGR_PARTNER_NODES: hospital-master,hospital-slave
+      REPMGR_NODE_NAME: node-1
+      REPMGR_NODE_NETWORK_NAME: hospital-master
+    ports:
+      - "5436:5432"
+    volumes:
+      - ./docker/sql/hospital:/docker-entrypoint-initdb.d/
+
+  hospital-slave:
+    image: postgres:14.5
+    environment:
+      POSTGRES_USERNAME: OLSHEVSKIY_215
+      POSTGRES_PASSWORD: OLSHEVSKIY_215
+      POSTGRES_DB: OLSHEVSKIY_215
+      REPMGR_PASSWORD: OLSHEVSKIY_215
+      REPMGR_PRIMARY_HOST: hospital-master
+      REPMGR_PARTNER_NODES: hospital-master,hospital-slave
+      REPMGR_NODE_NAME: node-2
+      REPMGR_NODE_NETWORK_NAME: hospital-slave
+    ports:
+      - "5437:5432"
+    depends_on:
+      - hospital-master
+
+volumes:
+  library_master_data:
+    driver: local
+  library_slave_data:
+    driver: local
+  trains_master_data:
+    driver: local
+  trains_slave_data:
+    driver: local
+  hospital_master_data:
+    driver: local
+  hospital_slave_data:
+    driver: local
